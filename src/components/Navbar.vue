@@ -28,6 +28,7 @@
       <div class="flex-grow-1"></div>
       <v-toolbar-items
         class="hidden-sm-and-down"
+        v-if="!isUserLoggedIn"
       >
         <v-btn
           text
@@ -37,6 +38,18 @@
         >
           <v-icon left>{{link.icon}}</v-icon>
           {{link.text}}
+        </v-btn>
+      </v-toolbar-items>
+      <v-toolbar-items
+        class="hidden-sm-and-down"
+        v-else
+      >
+        <v-btn
+          text
+          @click="onLogout"
+        >
+          <v-icon left>person</v-icon>
+          Logout
         </v-btn>
       </v-toolbar-items>
 
@@ -56,13 +69,20 @@
           </v-btn>
         </template>
 
-        <v-list>
+        <v-list v-if="!isUserLoggedIn">
           <v-list-item
             v-for="link in authLinks"
             :key="link.url"
             :to="link.text"
           >
             <v-list-item-title>{{link.text}}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <v-list v-else>
+          <v-list-item
+            @click="onLogout"
+          >
+            <v-list-item-title>Logout</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -87,6 +107,20 @@ export default {
           icon: 'person_add'
         }
       ]
+    }
+  },
+  computed: {
+    isUserLoggedIn () {
+      return this.$store.getters.isUserLoggedIn
+    }
+  },
+  methods: {
+    onLogout () {
+      this.$store.dispatch('logoutUser')
+        .then(() => {
+          this.$router.push('/login')
+        })
+        .catch(err => console.log(err))
     }
   }
 }
