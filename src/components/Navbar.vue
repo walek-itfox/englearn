@@ -34,7 +34,7 @@
           text
           v-for="link of authLinks"
           :key="link.url"
-          :to="link.text"
+          :to="link.url"
         >
           <v-icon left>{{link.icon}}</v-icon>
           {{link.text}}

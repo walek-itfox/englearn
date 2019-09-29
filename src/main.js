@@ -17,29 +17,32 @@ Vue.use(Vuetify)
 
 Vue.config.productionTip = false
 
+let app = ''
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyAQO3f6TRGc9-DmT7sXLdXLmDds_b4ivkE',
+  authDomain: 'english-learn-46e5f.firebaseapp.com',
+  databaseURL: 'https://english-learn-46e5f.firebaseio.com',
+  projectId: 'english-learn-46e5f',
+  storageBucket: '',
+  messagingSenderId: '784507449657',
+  appId: '1:784507449657:web:cd59ae5d928d15e58138e8'
+}
+fb.initializeApp(firebaseConfig)
+
 /* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  store,
-  vuetify: new Vuetify(options),
-  components: { App },
-  template: '<App/>',
-  created() {
-    const firebaseConfig = {
-      apiKey: 'AIzaSyAQO3f6TRGc9-DmT7sXLdXLmDds_b4ivkE',
-      authDomain: 'english-learn-46e5f.firebaseapp.com',
-      databaseURL: 'https://english-learn-46e5f.firebaseio.com',
-      projectId: 'english-learn-46e5f',
-      storageBucket: '',
-      messagingSenderId: '784507449657',
-      appId: '1:784507449657:web:cd59ae5d928d15e58138e8'
-    }
-    fb.initializeApp(firebaseConfig)
-    fb.auth().onAuthStateChanged(user => {
+fb.auth().onAuthStateChanged(user => {
+  app = new Vue({
+    el: '#app',
+    router,
+    store,
+    vuetify: new Vuetify(options),
+    components: { App },
+    template: '<App/>',
+    created () {
       if (user) {
         this.$store.dispatch('autoLoginUser', user)
       }
-    })
-  }
+    }
+  })
 })
