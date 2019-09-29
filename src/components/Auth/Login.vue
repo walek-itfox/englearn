@@ -21,13 +21,18 @@
                 <v-toolbar-title>Login form</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-                <v-form>
+                <v-form
+                  ref="form"
+                  v-model="valid"
+                >
                   <v-text-field
                     v-model="email"
                     label="Email"
                     name="email"
                     prepend-icon="person"
                     type="email"
+                    :rules="emailRules"
+                    required
                   ></v-text-field>
 
                   <v-text-field
@@ -36,6 +41,8 @@
                     name="password"
                     prepend-icon="lock"
                     type="password"
+                    :rules="passwordRules"
+                    required
                   ></v-text-field>
                 </v-form>
               </v-card-text>
@@ -43,6 +50,7 @@
                 <div class="flex-grow-1"></div>
                 <v-btn
                   color="primary"
+                  :disabled="!valid || loading"
                   :loading="loading"
                   @click="onSubmit"
                 >Login</v-btn>
@@ -58,7 +66,15 @@ export default {
   data () {
     return {
       email: '',
-      password: ''
+      password: '',
+      valid: false,
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+      ],
+      passwordRules: [
+        v => !!v || 'Password is required'
+      ]
     }
   },
   computed: {
@@ -68,11 +84,13 @@ export default {
   },
   methods: {
     onSubmit () {
-      this.$store.dispatch('loginUser', {email: this.email, password: this.password})
-        .then(() => {
-          this.$router.push('/')
-        })
-        .catch(err => console.log(err))
+      if (this.$refs.form.validate()) {
+        this.$store.dispatch('loginUser', {email: this.email, password: this.password})
+          .then(() => {
+            this.$router.push('/')
+          })
+          .catch(err => console.log(err))
+      }
     }
   }
 }

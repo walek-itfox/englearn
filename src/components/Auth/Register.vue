@@ -21,13 +21,18 @@
                 <v-toolbar-title>Register form</v-toolbar-title>
               </v-toolbar>
               <v-card-text>
-                <v-form>
+                <v-form
+                  ref="form"
+                  v-model="valid"
+                >
                   <v-text-field
                     v-model="email"
                     label="Email"
                     name="email"
                     prepend-icon="person"
                     type="email"
+                    :rules="emailRules"
+                    required
                   ></v-text-field>
 
                   <v-text-field
@@ -36,6 +41,8 @@
                     name="password"
                     prepend-icon="lock"
                     type="password"
+                    :rules="passwordRules"
+                    required
                   ></v-text-field>
 
                   <v-text-field
@@ -43,6 +50,8 @@
                     name="confirmPassword"
                     prepend-icon="lock"
                     type="password"
+                    :rules="confirmRules"
+                    required
                   ></v-text-field>
                 </v-form>
               </v-card-text>
@@ -51,6 +60,7 @@
                 <v-btn
                   color="primary"
                   @click="onSubmit"
+                  :disabled="!valid || loading"
                   :loading="loading"
                 >Register</v-btn>
               </v-card-actions>
@@ -65,7 +75,18 @@ export default {
   data () {
     return {
       email: '',
-      password: ''
+      password: '',
+      valid: false,
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid'
+      ],
+      passwordRules: [
+        v => !!v || 'Password is required'
+      ],
+      confirmRules: [
+        v => !!v || 'Password is required'
+      ]
     }
   },
   computed: {
@@ -75,11 +96,13 @@ export default {
   },
   methods: {
     onSubmit () {
-      this.$store.dispatch('registerUser', {email: this.email, password: this.password})
-        .then(() => {
-          this.$router.push('/')
-        })
-        .catch(err => console.log(err))
+      if (this.$refs.form.validate()) {
+        this.$store.dispatch('registerUser', {email: this.email, password: this.password})
+          .then(() => {
+            this.$router.push('/')
+          })
+          .catch(err => console.log(err))
+      }
     }
   }
 }
